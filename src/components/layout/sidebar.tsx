@@ -19,6 +19,7 @@ import {
   LogOut,
   LayoutGrid,
   Plug,
+  Code,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -51,6 +52,7 @@ export function Sidebar({ role, onLogout }: SidebarProps) {
     { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/dashboard/ads', label: 'Browse Ads', icon: Megaphone },
     { href: '/dashboard/tracking-links', label: 'My Links', icon: Link2 },
+    { href: '/dashboard/my-pixel', label: 'My Pixel', icon: Code },
     { href: '/dashboard/ad-units', label: 'Ad Units', icon: LayoutGrid },
     { href: '/dashboard/sites', label: 'My Sites', icon: Globe },
     { href: '/dashboard/adsense', label: 'AdSense', icon: Plug },

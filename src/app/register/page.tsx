@@ -1,260 +1,305 @@
-'use client';
-
-import { useState, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { Megaphone, Mail, Lock, User, AlertCircle, Building2, Globe } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Megaphone, Users, DollarSign, Shield, BarChart3, Globe, ArrowRight, CheckCircle } from 'lucide-react';
 
-function RegisterForm() {
-  const searchParams = useSearchParams();
-  const initialRole = searchParams.get('role') as 'advertiser' | 'publisher' | null;
-
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    confirmPassword: '',
-    firstName: '',
-    lastName: '',
-    role: initialRole || 'publisher',
-  });
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
-
-    if (formData.password.length < 8) {
-      setError('Password must be at least 8 characters');
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const res = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-          role: formData.role,
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.error || 'Registration failed');
-        setLoading(false);
-        return;
-      }
-
-      // Full page redirect so the server picks up the new auth cookie
-      window.location.href = '/dashboard';
-    } catch {
-      setError('An error occurred. Please try again.');
-      setLoading(false);
-    }
-  };
-
+export default function HomePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2 text-white mb-4">
-            <Megaphone className="h-10 w-10 text-blue-400" />
-            <span className="text-2xl font-bold">Local Ad Network</span>
-          </Link>
-          <h1 className="text-2xl font-bold text-white mt-6">Create your account</h1>
-          <p className="text-gray-400 mt-2">Join the network and start growing</p>
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
+      {/* Navigation */}
+      <nav className="container mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="flex items-center gap-2 text-white">
+          <Megaphone className="h-8 w-8 text-blue-400" />
+          <span className="text-xl font-bold">Local Ad Network</span>
         </div>
+        <div className="flex items-center gap-4">
+          <Link href="/login" className="text-gray-300 hover:text-white transition-colors">
+            Login
+          </Link>
+          <Link 
+            href="/register" 
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Get Started
+          </Link>
+        </div>
+      </nav>
 
-        <div className="bg-white rounded-xl shadow-xl p-8">
-          {/* Role Selection */}
-          <div className="flex gap-4 mb-6">
-            <button
-              type="button"
-              onClick={() => setFormData({ ...formData, role: 'advertiser' })}
-              className={`flex-1 p-4 rounded-lg border-2 transition-colors ${
-                formData.role === 'advertiser'
-                  ? 'border-blue-500 bg-blue-50'
-                  : 'border-gray-200 hover:border-gray-300'
-              }`}
-            >
-              <Building2 className={`h-6 w-6 mx-auto mb-2 ${
-                formData.role === 'advertiser' ? 'text-blue-600' : 'text-gray-400'
-              }`} />
-              <p className={`font-medium ${
-                formData.role === 'advertiser' ? 'text-blue-600' : 'text-gray-700'
-              }`}>Advertiser</p>
-              <p className="text-xs text-gray-500 mt-1">Run ad campaigns</p>
-            </button>
-            <button
-              type="button"
-              onClick={() => setFormData({ ...formData, role: 'publisher' })}
-              className={`flex-1 p-4 rounded-lg border-2 transition-colors ${
-                formData.role === 'publisher'
-                  ? 'border-green-500 bg-green-50'
-                  : 'border-gray-200 hover:border-gray-300'
-              }`}
-            >
-              <Globe className={`h-6 w-6 mx-auto mb-2 ${
-                formData.role === 'publisher' ? 'text-green-600' : 'text-gray-400'
-              }`} />
-              <p className={`font-medium ${
-                formData.role === 'publisher' ? 'text-green-600' : 'text-gray-700'
-              }`}>Publisher</p>
-              <p className="text-xs text-gray-500 mt-1">Earn from traffic</p>
-            </button>
+      {/* Hero Section */}
+      <section className="container mx-auto px-6 py-20 text-center">
+        <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
+          Connect Advertisers with
+          <span className="text-blue-400 block mt-2">High-Quality Publishers</span>
+        </h1>
+        <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
+          A powerful digital advertising network with CPC and lead tracking. 
+          Run targeted campaigns, earn from quality traffic, and grow your business.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Link
+            href="/register?role=advertiser"
+            className="bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-medium hover:bg-blue-700 transition-colors inline-flex items-center justify-center gap-2"
+          >
+            Start as Advertiser <ArrowRight className="h-5 w-5" />
+          </Link>
+          <Link
+            href="/register?role=publisher"
+            className="bg-white text-gray-900 px-8 py-4 rounded-lg text-lg font-medium hover:bg-gray-100 transition-colors inline-flex items-center justify-center gap-2"
+          >
+            Join as Publisher <ArrowRight className="h-5 w-5" />
+          </Link>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="container mx-auto px-6 py-16">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+          <div>
+            <p className="text-4xl font-bold text-blue-400">80%</p>
+            <p className="text-gray-400 mt-2">Publisher Revenue Share</p>
           </div>
+          <div>
+            <p className="text-4xl font-bold text-blue-400">50+</p>
+            <p className="text-gray-400 mt-2">Countries Supported</p>
+          </div>
+          <div>
+            <p className="text-4xl font-bold text-blue-400">Real-time</p>
+            <p className="text-gray-400 mt-2">Click Tracking</p>
+          </div>
+          <div>
+            <p className="text-4xl font-bold text-blue-400">AI</p>
+            <p className="text-gray-400 mt-2">Fraud Detection</p>
+          </div>
+        </div>
+      </section>
 
-          {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3 text-red-700">
-              <AlertCircle className="h-5 w-5 flex-shrink-0" />
-              <p className="text-sm">{error}</p>
+      {/* Features Section */}
+      <section className="bg-gray-800/50 py-20">
+        <div className="container mx-auto px-6">
+          <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-4">
+            Powerful Features
+          </h2>
+          <p className="text-gray-400 text-center mb-12 max-w-2xl mx-auto">
+            Everything you need to run successful advertising campaigns or monetize your traffic
+          </p>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="bg-gray-900 rounded-xl p-6 border border-gray-700">
+              <Globe className="h-12 w-12 text-blue-400 mb-4" />
+              <h3 className="text-xl font-semibold text-white mb-2">Country-Based CPC</h3>
+              <p className="text-gray-400">
+                Set different CPC rates for each country. Target your campaigns precisely where they matter most.
+              </p>
             </div>
-          )}
+            
+            <div className="bg-gray-900 rounded-xl p-6 border border-gray-700">
+              <Shield className="h-12 w-12 text-green-400 mb-4" />
+              <h3 className="text-xl font-semibold text-white mb-2">Fraud Protection</h3>
+              <p className="text-gray-400">
+                Advanced fraud detection catches bots, repeated clicks, and suspicious traffic in real-time.
+              </p>
+            </div>
+            
+            <div className="bg-gray-900 rounded-xl p-6 border border-gray-700">
+              <BarChart3 className="h-12 w-12 text-purple-400 mb-4" />
+              <h3 className="text-xl font-semibold text-white mb-2">Real-time Analytics</h3>
+              <p className="text-gray-400">
+                Track clicks, conversions, and earnings in real-time with comprehensive dashboards.
+              </p>
+            </div>
+            
+            <div className="bg-gray-900 rounded-xl p-6 border border-gray-700">
+              <Users className="h-12 w-12 text-yellow-400 mb-4" />
+              <h3 className="text-xl font-semibold text-white mb-2">Lead Tracking</h3>
+              <p className="text-gray-400">
+                Track leads from click to conversion with our easy-to-install tracking pixel.
+              </p>
+            </div>
+            
+            <div className="bg-gray-900 rounded-xl p-6 border border-gray-700">
+              <DollarSign className="h-12 w-12 text-green-400 mb-4" />
+              <h3 className="text-xl font-semibold text-white mb-2">Easy Payments</h3>
+              <p className="text-gray-400">
+                Secure wallet system with easy deposits and withdrawals. Multiple payment methods supported.
+              </p>
+            </div>
+            
+            <div className="bg-gray-900 rounded-xl p-6 border border-gray-700">
+              <Megaphone className="h-12 w-12 text-red-400 mb-4" />
+              <h3 className="text-xl font-semibold text-white mb-2">Video Ads Support</h3>
+              <p className="text-gray-400">
+                Upload video ads and reach your audience with engaging multimedia content.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  First Name
-                </label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                  <input
-                    type="text"
-                    name="firstName"
-                    value={formData.firstName}
-                    onChange={handleChange}
-                    className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="John"
-                  />
+      {/* For Advertisers */}
+      <section className="py-20">
+        <div className="container mx-auto px-6">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+                For Advertisers
+              </h2>
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="h-6 w-6 text-green-400 flex-shrink-0 mt-0.5" />
+                  <p className="text-gray-300">Create campaigns targeting specific countries and niches</p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="h-6 w-6 text-green-400 flex-shrink-0 mt-0.5" />
+                  <p className="text-gray-300">Upload video ads or use banner images</p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="h-6 w-6 text-green-400 flex-shrink-0 mt-0.5" />
+                  <p className="text-gray-300">Set total and daily budgets to control spending</p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="h-6 w-6 text-green-400 flex-shrink-0 mt-0.5" />
+                  <p className="text-gray-300">Track conversions with easy pixel installation</p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="h-6 w-6 text-green-400 flex-shrink-0 mt-0.5" />
+                  <p className="text-gray-300">Detailed analytics with ROI metrics</p>
                 </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Last Name
-                </label>
-                <input
-                  type="text"
-                  name="lastName"
-                  value={formData.lastName}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Doe"
-                />
+              <Link
+                href="/register?role=advertiser"
+                className="mt-8 inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Start Advertising <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+            <div className="bg-gray-800 rounded-xl p-8 border border-gray-700">
+              <div className="space-y-4">
+                <div className="flex justify-between items-center py-3 border-b border-gray-700">
+                  <span className="text-gray-400">Campaign Reach</span>
+                  <span className="text-white font-medium">50+ Countries</span>
+                </div>
+                <div className="flex justify-between items-center py-3 border-b border-gray-700">
+                  <span className="text-gray-400">Min. CPC</span>
+                  <span className="text-white font-medium">$0.01</span>
+                </div>
+                <div className="flex justify-between items-center py-3 border-b border-gray-700">
+                  <span className="text-gray-400">Min. Budget</span>
+                  <span className="text-white font-medium">$10</span>
+                </div>
+                <div className="flex justify-between items-center py-3 border-b border-gray-700">
+                  <span className="text-gray-400">Ad Types</span>
+                  <span className="text-white font-medium">Video, Image, Banner</span>
+                </div>
+                <div className="flex justify-between items-center py-3">
+                  <span className="text-gray-400">Conversion Tracking</span>
+                  <span className="text-green-400 font-medium">✓ Included</span>
+                </div>
               </div>
             </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Email Address
-              </label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="you@example.com"
-                  required
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Password
-              </label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <input
-                  type="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="••••••••"
-                  required
-                />
-              </div>
-              <p className="text-xs text-gray-500 mt-1">At least 8 characters</p>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Confirm Password
-              </label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <input
-                  type="password"
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="••••••••"
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="flex items-start">
-              <input
-                type="checkbox"
-                required
-                className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 mt-0.5"
-              />
-              <span className="ml-2 text-sm text-gray-600">
-                I agree to the{' '}
-                <a href="#" className="text-blue-600 hover:text-blue-700">Terms of Service</a>
-                {' '}and{' '}
-                <a href="#" className="text-blue-600 hover:text-blue-700">Privacy Policy</a>
-              </span>
-            </div>
-
-            <Button type="submit" className="w-full" size="lg" loading={loading}>
-              Create Account
-            </Button>
-          </form>
-
-          <p className="mt-6 text-center text-sm text-gray-600">
-            Already have an account?{' '}
-            <Link href="/login" className="text-blue-600 hover:text-blue-700 font-medium">
-              Sign in
-            </Link>
-          </p>
+          </div>
         </div>
-      </div>
-    </div>
-  );
-}
+      </section>
 
-export default function RegisterPage() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 flex items-center justify-center">
-        <div className="text-white">Loading...</div>
-      </div>
-    }>
-      <RegisterForm />
-    </Suspense>
+      {/* For Publishers */}
+      <section className="py-20 bg-gray-800/50">
+        <div className="container mx-auto px-6">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div className="order-2 md:order-1 bg-gray-900 rounded-xl p-8 border border-gray-700">
+              <div className="space-y-4">
+                <div className="flex justify-between items-center py-3 border-b border-gray-700">
+                  <span className="text-gray-400">Revenue Share</span>
+                  <span className="text-green-400 font-bold text-xl">80%</span>
+                </div>
+                <div className="flex justify-between items-center py-3 border-b border-gray-700">
+                  <span className="text-gray-400">Min. Payout</span>
+                  <span className="text-white font-medium">$10</span>
+                </div>
+                <div className="flex justify-between items-center py-3 border-b border-gray-700">
+                  <span className="text-gray-400">Payment Methods</span>
+                  <span className="text-white font-medium">PayPal, Bank, Crypto</span>
+                </div>
+                <div className="flex justify-between items-center py-3 border-b border-gray-700">
+                  <span className="text-gray-400">Payment Frequency</span>
+                  <span className="text-white font-medium">Weekly</span>
+                </div>
+                <div className="flex justify-between items-center py-3">
+                  <span className="text-gray-400">Real-time Stats</span>
+                  <span className="text-green-400 font-medium">✓ Yes</span>
+                </div>
+              </div>
+            </div>
+            <div className="order-1 md:order-2">
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+                For Publishers
+              </h2>
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="h-6 w-6 text-green-400 flex-shrink-0 mt-0.5" />
+                  <p className="text-gray-300">Earn 80% of every click you generate</p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="h-6 w-6 text-green-400 flex-shrink-0 mt-0.5" />
+                  <p className="text-gray-300">Browse and select campaigns matching your niche</p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="h-6 w-6 text-green-400 flex-shrink-0 mt-0.5" />
+                  <p className="text-gray-300">Generate tracking links in seconds</p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="h-6 w-6 text-green-400 flex-shrink-0 mt-0.5" />
+                  <p className="text-gray-300">Bonus earnings on conversions</p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="h-6 w-6 text-green-400 flex-shrink-0 mt-0.5" />
+                  <p className="text-gray-300">Fast and reliable payouts</p>
+                </div>
+              </div>
+              <Link
+                href="/register?role=publisher"
+                className="mt-8 inline-flex items-center gap-2 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors"
+              >
+                Start Earning <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20">
+        <div className="container mx-auto px-6 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+            Ready to Get Started?
+          </h2>
+          <p className="text-xl text-gray-400 mb-8 max-w-2xl mx-auto">
+            Join thousands of advertisers and publishers already growing with Local Ad Network
+          </p>
+          <Link
+            href="/register"
+            className="bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-medium hover:bg-blue-700 transition-colors inline-flex items-center gap-2"
+          >
+            Create Free Account <ArrowRight className="h-5 w-5" />
+          </Link>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t border-gray-800 py-12">
+        <div className="container mx-auto px-6">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="flex items-center gap-2 text-white">
+              <Megaphone className="h-6 w-6 text-blue-400" />
+              <span className="font-bold">Local Ad Network</span>
+            </div>
+            <p className="text-gray-500 text-sm">
+              © {new Date().getFullYear()} Local Ad Network. All rights reserved.
+            </p>
+            <div className="flex gap-6">
+              <a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Privacy</a>
+              <a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Terms</a>
+              <a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Support</a>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
   );
 }
