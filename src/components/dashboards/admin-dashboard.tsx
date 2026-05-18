@@ -246,7 +246,15 @@ export function AdminDashboard() {
           <CardTitle>Quick Actions</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <a
+              href="/dashboard/campaigns/new"
+              className="p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors text-center"
+            >
+              <Megaphone className="h-8 w-8 text-purple-600 mx-auto mb-2" />
+              <p className="font-medium text-purple-900">Create Campaign</p>
+              <p className="text-sm text-purple-600">With uploads</p>
+            </a>
             <a
               href="/dashboard/users?status=pending"
               className="p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors text-center"

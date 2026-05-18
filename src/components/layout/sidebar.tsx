@@ -32,12 +32,13 @@ export function Sidebar({ role, onLogout }: SidebarProps) {
 
   const adminLinks = [
     { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { href: '/dashboard/campaigns/new', label: 'Create Campaign', icon: Megaphone },
+    { href: '/dashboard/campaigns', label: 'All Campaigns', icon: BarChart3 },
     { href: '/dashboard/users', label: 'Users', icon: Users },
-    { href: '/dashboard/campaigns', label: 'Campaigns', icon: Megaphone },
     { href: '/dashboard/country-rates', label: 'Country Rates', icon: Globe },
     { href: '/dashboard/fraud', label: 'Fraud Detection', icon: AlertTriangle },
     { href: '/dashboard/withdrawals', label: 'Withdrawals', icon: DollarSign },
-    { href: '/dashboard/analytics', label: 'Analytics', icon: BarChart3 },
+    { href: '/dashboard/analytics', label: 'Analytics', icon: LayoutGrid },
   ];
 
   const advertiserLinks = [
