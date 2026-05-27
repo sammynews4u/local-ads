@@ -45,12 +45,18 @@ export const users = pgTable('users', {
   lastName: varchar('last_name', { length: 100 }),
   avatarUrl: text('avatar_url'),
   emailVerified: boolean('email_verified').default(false),
+  // Referral system
+  referralCode: varchar('referral_code', { length: 20 }).unique(),
+  referredBy: uuid('referred_by').references((): any => users.id),
+  referralLevel: integer('referral_level').default(0), // 0 = direct, depth from root
   lastLoginAt: timestamp('last_login_at'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 }, (table) => [
   index('users_email_idx').on(table.email),
   index('users_role_idx').on(table.role),
+  index('users_referral_code_idx').on(table.referralCode),
+  index('users_referred_by_idx').on(table.referredBy),
 ]);
 
 // Advertiser profiles
@@ -594,4 +600,103 @@ export const publisherSitesRelations = relations(publisherSites, ({ one }) => ({
     fields: [publisherSites.userId],
     references: [users.id],
   }),
+}));
+
+// ============================================
+// REFERRAL PROGRAM (10 Levels)
+// ============================================
+
+// Referral level configuration (admin-managed)
+export const referralLevels = pgTable('referral_levels', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  level: integer('level').notNull().unique(), // 1 to 10
+  commissionPercent: decimal('commission_percent', { precision: 5, scale: 2 }).notNull(), // % of referral's earnings
+  label: varchar('label', { length: 50 }), // e.g. "Direct Referral", "Level 2"
+  active: boolean('active').default(true),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+}, (table) => [
+  uniqueIndex('referral_levels_level_idx').on(table.level),
+]);
+
+// Referral earnings log
+export const referralEarnings = pgTable('referral_earnings', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  earnerId: uuid('earner_id').references(() => users.id, { onDelete: 'cascade' }).notNull(), // who earns
+  sourceUserId: uuid('source_user_id').references(() => users.id, { onDelete: 'cascade' }).notNull(), // who generated the click/earning
+  level: integer('level').notNull(), // which referral level (1-10)
+  sourceType: varchar('source_type', { length: 20 }).notNull(), // 'click', 'conversion'
+  sourceEarning: decimal('source_earning', { precision: 12, scale: 4 }).notNull(), // original earning amount
+  commissionPercent: decimal('commission_percent', { precision: 5, scale: 2 }).notNull(),
+  commissionAmount: decimal('commission_amount', { precision: 12, scale: 4 }).notNull(), // actual commission
+  referenceId: uuid('reference_id'), // click_id or conversion_id
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+}, (table) => [
+  index('referral_earnings_earner_idx').on(table.earnerId),
+  index('referral_earnings_source_idx').on(table.sourceUserId),
+  index('referral_earnings_created_idx').on(table.createdAt),
+]);
+
+// ============================================
+// AD DISPLAY WIDGETS (for publisher websites)
+// ============================================
+
+export const adWidgetStyleEnum = pgEnum('ad_widget_style', [
+  'banner', 'sidebar', 'inline', 'popup', 'sticky_bottom', 'native_feed'
+]);
+
+export const adWidgets = pgTable('ad_widgets', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  publisherId: uuid('publisher_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
+  name: varchar('name', { length: 100 }).notNull(),
+  style: adWidgetStyleEnum('style').notNull().default('banner'),
+  width: varchar('width', { length: 20 }).default('100%'), // '300px', '100%'
+  height: varchar('height', { length: 20 }).default('250px'),
+  maxAds: integer('max_ads').default(1), // how many ads to show at once
+  rotateInterval: integer('rotate_interval').default(30), // seconds between ad rotation
+  // Targeting
+  targetNiches: jsonb('target_niches').$type<string[]>().default([]),
+  targetCountries: jsonb('target_countries').$type<string[]>().default([]),
+  // Styling
+  backgroundColor: varchar('background_color', { length: 20 }).default('#ffffff'),
+  borderRadius: varchar('border_radius', { length: 10 }).default('8px'),
+  showBranding: boolean('show_branding').default(true),
+  customCss: text('custom_css'),
+  // Stats
+  impressions: integer('impressions').default(0),
+  clicks: integer('clicks').default(0),
+  earnings: decimal('earnings', { precision: 12, scale: 4 }).default('0.00'),
+  // Status
+  active: boolean('active').default(true),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+}, (table) => [
+  index('ad_widgets_publisher_idx').on(table.publisherId),
+]);
+
+// ============================================
+// PLATFORM SETTINGS (admin-managed features)
+// ============================================
+
+export const platformSettings = pgTable('platform_settings', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  key: varchar('key', { length: 100 }).notNull().unique(),
+  value: text('value').notNull(),
+  description: text('description'),
+  category: varchar('category', { length: 50 }).default('general'), // general, referral, publisher, advertiser
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+}, (table) => [
+  uniqueIndex('platform_settings_key_idx').on(table.key),
+]);
+
+// Relations for new tables
+export const referralLevelsRelations = relations(referralLevels, ({}) => ({}));
+
+export const referralEarningsRelations = relations(referralEarnings, ({ one }) => ({
+  earner: one(users, { fields: [referralEarnings.earnerId], references: [users.id], relationName: 'earner' }),
+  sourceUser: one(users, { fields: [referralEarnings.sourceUserId], references: [users.id], relationName: 'sourceUser' }),
+}));
+
+export const adWidgetsRelations = relations(adWidgets, ({ one }) => ({
+  publisher: one(users, { fields: [adWidgets.publisherId], references: [users.id] }),
 }));

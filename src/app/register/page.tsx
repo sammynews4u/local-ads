@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 function RegisterForm() {
   const searchParams = useSearchParams();
   const initialRole = searchParams.get('role') as 'advertiser' | 'publisher' | null;
+  const refCode = searchParams.get('ref') || '';
 
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
@@ -98,6 +99,7 @@ function RegisterForm() {
           role: formData.role,
           firstName: formData.firstName,
           lastName: formData.lastName,
+          referralCode: refCode || undefined,
           // Advertiser profile
           ...(formData.role === 'advertiser' && {
             companyName: formData.companyName,

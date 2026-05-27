@@ -20,6 +20,8 @@ import {
   LayoutGrid,
   Plug,
   Code,
+  Gift,
+  Layers,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -36,6 +38,7 @@ export function Sidebar({ role, onLogout }: SidebarProps) {
     { href: '/dashboard/campaigns', label: 'All Campaigns', icon: BarChart3 },
     { href: '/dashboard/users', label: 'Users', icon: Users },
     { href: '/dashboard/country-rates', label: 'Country Rates', icon: Globe },
+    { href: '/dashboard/admin-referrals', label: 'Referral Program', icon: Gift },
     { href: '/dashboard/fraud', label: 'Fraud Detection', icon: AlertTriangle },
     { href: '/dashboard/withdrawals', label: 'Withdrawals', icon: DollarSign },
     { href: '/dashboard/analytics', label: 'Analytics', icon: LayoutGrid },
@@ -53,9 +56,9 @@ export function Sidebar({ role, onLogout }: SidebarProps) {
     { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/dashboard/ads', label: 'Browse Ads', icon: Megaphone },
     { href: '/dashboard/tracking-links', label: 'My Links', icon: Link2 },
+    { href: '/dashboard/widgets', label: 'Ad Widgets', icon: Layers },
     { href: '/dashboard/my-pixel', label: 'My Pixel', icon: Code },
-    { href: '/dashboard/ad-units', label: 'Ad Units', icon: LayoutGrid },
-    { href: '/dashboard/sites', label: 'My Sites', icon: Globe },
+    { href: '/dashboard/referrals', label: 'Referrals', icon: Gift },
     { href: '/dashboard/adsense', label: 'AdSense', icon: Plug },
     { href: '/dashboard/earnings', label: 'Earnings', icon: DollarSign },
     { href: '/dashboard/wallet', label: 'Wallet', icon: Wallet },
