@@ -6,7 +6,7 @@ import { parseUserAgent } from '@/lib/utils';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ widgetId: string }> }
+  { params }: { params: Promise<{ widgetID: string }> }
 ) {
   try {
     const { widgetId } = await params;
