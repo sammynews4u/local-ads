@@ -99,8 +99,4 @@ export async function POST(request: NextRequest) {
 }
 
 // Increase body size limit for this route
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+export const runtime = 'nodejs'
